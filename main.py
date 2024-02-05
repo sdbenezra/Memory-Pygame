@@ -121,8 +121,6 @@ def check_guesses(first, second):
 
 
 running = True
-
-# event handler
 while running:
     timer.tick(fps)
     screen.fill(white)
@@ -189,4 +187,5 @@ while running:
         screen.blit(piece_text, location)
 
     pygame.display.flip()
+
 pygame.QUIT
