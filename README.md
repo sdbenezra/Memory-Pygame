@@ -8,8 +8,9 @@ Some of the frameworks I plan to explore include:
 
   1. Pygame (Python library for game creation).
   2. Reflex (Create web apps, including front and backend, fully in Python).
-  3. Flex (It's like Flutter for Python).
-  4. Pygbag (This tool uses Webassembly to compile your Python code to a binary code format that will run in the browser)
+  3. Pyscript (Another tool for creating web apps with Python - from the Anaconda folks - can host on Pyscript.com)
+  4. Flex (It's like Flutter for Python).
+  5. Pygbag (This tool uses Webassembly to compile your Python code to a binary code format that will run in the browser)
 
 ## Deploying Memory-Pygame
 Now that the basic game is completed I am going to deploy it in Github pages using Pygbag. I will document the process
