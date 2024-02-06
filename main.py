@@ -1,6 +1,6 @@
 import random
-
 import pygame
+import asyncio
 
 pygame.init()
 
@@ -30,6 +30,7 @@ score = 0
 best_score = 0
 matches = 0
 game_over = False
+running = True
 
 # create screen
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
@@ -120,72 +121,75 @@ def check_guesses(first, second):
         score += 1
 
 
-running = True
-while running:
-    timer.tick(fps)
-    screen.fill(white)
-    if new_board:
-        generate_board()
-        print(spaces)
-        new_board = False
+async def main():
+    global running, new_board, spaces, first_guess, second_guess, first_guess_num,\
+        second_guess_num, matches, game_over, score, best_score, options_list, used,\
+        correct
+    while running:
+        screen.fill(white)
+        if new_board:
+            generate_board()
+            print(spaces)
+            new_board = False
 
-    restart = draw_backgrounds()
-    board = draw_board()
+        restart = draw_backgrounds()
+        board = draw_board()
 
-    if first_guess and second_guess:
-        check_guesses(first_guess_num, second_guess_num)
-        pygame.time.delay(1000)
-        first_guess = False
-        second_guess = False
+        if first_guess and second_guess:
+            check_guesses(first_guess_num, second_guess_num)
+            pygame.time.delay(1000)
+            first_guess = False
+            second_guess = False
 
-    # game event handlers
-    for event in pygame.event.get():
-        # to quit from game
-        if event.type == pygame.QUIT:
-            running = False
-        # mouse click handlers
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for i in range(len(board)):
-                button = board[i]
-                if not game_over:
-                    if button.collidepoint(event.pos) and not first_guess:
-                        first_guess = True
-                        first_guess_num = i
-                        print(f'first guess {i}')
-                    if button.collidepoint(event.pos) and not second_guess and first_guess and i != first_guess_num:
-                        second_guess = True
-                        second_guess_num = i
-                        print(f'second guess {i}')
-            if restart.collidepoint(event.pos):
-                options_list = []
-                used = []
-                spaces = []
-                new_board = True
-                score = 0
-                matches = 0
-                first_guess = False
-                second_guess = False
-                correct = [[0 for col in range(cols)] for row in range(rows)]
-                game_over = False
+        # game event handlers
+        for event in pygame.event.get():
+            # to quit from game
+            if event.type == pygame.QUIT:
+                running = False
+            # mouse click handlers
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in range(len(board)):
+                    button = board[i]
+                    if not game_over:
+                        if button.collidepoint(event.pos) and not first_guess:
+                            first_guess = True
+                            first_guess_num = i
+                            print(f'first guess {i}')
+                        if button.collidepoint(event.pos) and not second_guess and first_guess and i != first_guess_num:
+                            second_guess = True
+                            second_guess_num = i
+                            print(f'second guess {i}')
+                if restart.collidepoint(event.pos):
+                    options_list = []
+                    used = []
+                    spaces = []
+                    new_board = True
+                    score = 0
+                    matches = 0
+                    first_guess = False
+                    second_guess = False
+                    correct = [[0 for col in range(cols)] for row in range(rows)]
+                    game_over = False
 
-    if matches == rows * cols // 2:
-        game_over = True
-        winner = pygame.draw.rect(screen, gray, [10, HEIGHT - 330, WIDTH - 20, 80], 0, 5)
-        winner_text = sub_title_font.render(f'You Won in {score} moves!', True, white)
-        screen.blit(winner_text, (30, HEIGHT - 310))
-        if best_score > score or best_score == 0:
-            best_score = score
+        if matches == rows * cols // 2:
+            game_over = True
+            winner = pygame.draw.rect(screen, gray, [10, HEIGHT - 330, WIDTH - 20, 80], 0, 5)
+            winner_text = sub_title_font.render(f'You Won in {score} moves!', True, white)
+            screen.blit(winner_text, (30, HEIGHT - 310))
+            if best_score > score or best_score == 0:
+                best_score = score
 
-    if first_guess:
-        piece_text = body_font.render(f'{spaces[first_guess_num]}', True, selected)
-        location = (first_guess_num // rows * 85 + 85, (first_guess_num % rows) * 90 + 140)
-        screen.blit(piece_text, location)
+        if first_guess:
+            piece_text = body_font.render(f'{spaces[first_guess_num]}', True, selected)
+            location = (first_guess_num // rows * 85 + 85, (first_guess_num % rows) * 90 + 140)
+            screen.blit(piece_text, location)
 
-    if second_guess:
-        piece_text = body_font.render(f'{spaces[second_guess_num]}', True, selected)
-        location = (second_guess_num // rows * 85 + 85, (second_guess_num % rows) * 90 + 140)
-        screen.blit(piece_text, location)
+        if second_guess:
+            piece_text = body_font.render(f'{spaces[second_guess_num]}', True, selected)
+            location = (second_guess_num // rows * 85 + 85, (second_guess_num % rows) * 90 + 140)
+            screen.blit(piece_text, location)
 
-    pygame.display.flip()
+        pygame.display.flip()
+        await asyncio.sleep(0)
 
-pygame.QUIT
+asyncio.run(main())
